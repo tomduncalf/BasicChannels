@@ -11,35 +11,46 @@ import AVFoundation
 
 class TestEngine {
     let engine = AudioEngine()
-    let sampler = MIDISampler(name: "Test")
+    let sampler = AppleSampler()
     let sequencer = Sequencer()
     var callbackInst = CallbackInstrument()
     let mixer = Mixer()
+    let shaker = Shaker()
 
     init() {
         do {
-            let sampleURL = Bundle.main.resourceURL?.appendingPathComponent("Samples/snare_D1.wav")
-            try sampler.loadAudioFile(AVAudioFile(forReading: sampleURL!))
-        } catch {
-            print ("ERROR")
+            let sampleNames = ["bass_drum_C1", "snare_D1"]
+            let sampleFiles = try sampleNames.map { (name) -> AVAudioFile in
+                try AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/\(name).wav"))!)
+            }
+            try sampler.loadAudioFiles(sampleFiles)
+        } catch let err {
+            Log("Error loading sample \(err)")
         }
         
-        callbackInst = CallbackInstrument(midiCallback: { (_, beat, _) in
-//            self.data.currentBeat = Int(beat)
-            print(beat)
+        callbackInst = CallbackInstrument(midiCallback: { (_, note, _) in
+            print(note)
         })
         
-        let track = sequencer.addTrack(for: callbackInst)
+        let track = sequencer.addTrack(for: sampler)
         track.length = 4
-        track.sequence.add(noteNumber: 24, position: 0.0, duration: 0.4)
+        for beat in 0...3 {
+            track.sequence.add(noteNumber: 24, position: Double(beat), duration: 1.0)
+            if (beat % 2 == 1) {
+                track.sequence.add(noteNumber: 26, position: Double(beat), duration: 1.0)
+            }
+        }
                 
+        mixer.addInput(sampler)
         mixer.addInput(callbackInst)
+        mixer.addInput(shaker)
+
         engine.output = mixer
 
         do {
             try engine.start()
         } catch let err {
-            Log(err)
+            Log("Error starting engine \(err)")
         }
         
         sequencer.tempo = 120
