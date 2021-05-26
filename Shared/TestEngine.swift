@@ -15,7 +15,7 @@ class TestEngine {
     let sequencer = Sequencer()
     var callbackInst = CallbackInstrument()
     let mixer = Mixer()
-    let shaker = Shaker()
+    let delay: StereoDelay
 
     init() {
         do {
@@ -46,9 +46,14 @@ class TestEngine {
                 
         mixer.addInput(sampler)
         mixer.addInput(callbackInst)
-        mixer.addInput(shaker)
 
-        engine.output = mixer
+        delay = StereoDelay(mixer)
+        delay.feedback = 0.4
+        delay.time = 0.20
+        delay.dryWetMix = 0.4
+        delay.pingPong = 0.7
+        
+        engine.output = delay
 
         do {
             try engine.start()
