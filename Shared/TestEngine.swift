@@ -19,7 +19,7 @@ class TestEngine {
 
     init() {
         do {
-            let sampleNames = ["bass_drum_C1", "snare_D1"]
+            let sampleNames = ["bass_drum_C1", "snare_D1", "closed_hi_hat_F#1"]
             let sampleFiles = try sampleNames.map { (name) -> AVAudioFile in
                 try AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/\(name).wav"))!)
             }
@@ -34,11 +34,14 @@ class TestEngine {
         
         let track = sequencer.addTrack(for: sampler)
         track.length = 4
-        for beat in 0...3 {
-            track.sequence.add(noteNumber: 24, position: Double(beat), duration: 1.0)
-            if (beat % 2 == 1) {
+        for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
+            if (beat.truncatingRemainder(dividingBy: 1) == 0) {
+                track.sequence.add(noteNumber: 24, position: Double(beat), duration: 1.0)
+            }
+            if (beat.truncatingRemainder(dividingBy: 2) == 1) {
                 track.sequence.add(noteNumber: 26, position: Double(beat), duration: 1.0)
             }
+            track.sequence.add(noteNumber: 30, position: Double(beat), duration: 1.0)
         }
                 
         mixer.addInput(sampler)
