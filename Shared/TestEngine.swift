@@ -86,14 +86,16 @@ class TestEngine {
         chordDelay.dryWetMix = 40
         chordDelay.lowPassCutoff = 1500
                 
-        callbackInst = CallbackInstrument(midiCallback: { (_, note, _) in
-            self.chordSampler.filterStrength = Float.random(in: 50...500)
-            if (!self.lastChordHadAttack && Float.random(in: 0...1) > 0.33) {
-                Log("attack")
-                self.chordSampler.filterAttackDuration = Float.random(in: 0.25...1.5)
+        callbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
+            if (status != 128) {
+                return
+            }
+            
+            self.chordSampler.filterStrength = Float.random(in: 10...400)
+            if (!self.lastChordHadAttack && Float.random(in: 0...1) > 0.25) {
+                self.chordSampler.filterAttackDuration = Float.random(in: 0.25...2.5)
                 self.lastChordHadAttack = true
             } else {
-                Log("no attack")
                 self.chordSampler.filterAttackDuration = 0
                 self.lastChordHadAttack = false
             }
