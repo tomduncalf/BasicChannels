@@ -36,19 +36,34 @@ class TestEngine {
             Log("Error loading sample \(err)")
         }
 
-        chordSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/synth_chord_cmin.wav"))!)
-
+//        chordSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/synth_C3.wav"))!)
+//
+//        let desc = SampleDescriptor(noteNumber: 24,
+//                                 noteFrequency: Float(TuningTable().frequency(forNoteNumber: 24)),
+//                                 minimumNoteNumber: 0,
+//                                 maximumNoteNumber: 127,
+//                                 minimumVelocity: 0,
+//                                 maximumVelocity: 127,
+//                                 isLooping: false,
+//                                 loopStartPoint: 0.0,
+//                                 loopEndPoint: 1.0,
+//                                 startPoint: 0.0,
+//                                 endPoint: 0.0)
+        
+        chordSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_0010/AKWF_0908.wav"))!)
+                                       
         let desc = SampleDescriptor(noteNumber: 26,
-                                 noteFrequency: 44100.0 / 600,
+                                 noteFrequency: 44100.0/600,
                                  minimumNoteNumber: 0,
                                  maximumNoteNumber: 127,
                                  minimumVelocity: 0,
                                  maximumVelocity: 127,
-                                 isLooping: false,
+                                 isLooping: true,
                                  loopStartPoint: 0.0,
                                  loopEndPoint: 1.0,
                                  startPoint: 0.0,
                                  endPoint: 0.0)
+                                       
         chordSampler = Sampler(sampleDescriptor: desc, file: chordSample)
         chordSampler.buildSimpleKeyMap()
         
@@ -65,7 +80,7 @@ class TestEngine {
         }
         
         chordSampler.attackDuration = 0.01
-        chordSampler.decayDuration = 0.3
+        chordSampler.decayDuration = 0.5
         chordSampler.sustainLevel = 0
         chordSampler.releaseDuration = 0.5
         
@@ -74,10 +89,15 @@ class TestEngine {
         chordSampler.filterStrength = 1000
         chordSampler.filterAttackDuration = 0
         
+        chordSampler.masterVolume = 0.2
+        
         let chordTrack = sequencer.addTrack(for: chordSampler)
         drumTrack.length = 4
-        chordTrack.sequence.add(noteNumber: 24, position: 0.5, duration: 1)
-                
+        let baseNote: UInt8 = 48
+        chordTrack.sequence.add(noteNumber: baseNote + 0, position: 0.5, duration: 1)
+        chordTrack.sequence.add(noteNumber: baseNote + 3, position: 0.5, duration: 1)
+        chordTrack.sequence.add(noteNumber: baseNote + 7, position: 0.5, duration: 1)
+
 //        chordFilter = MoogLadder(chordSampler, cutoffFrequency: 5000, resonance: 0.5)
         
         chordDelay = Delay(chordSampler)
