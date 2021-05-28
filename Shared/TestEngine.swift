@@ -18,9 +18,12 @@ class TestEngine {
     let sequenceSampler: Sampler
     let sequencer = Sequencer()
     var callbackInst = CallbackInstrument()
+    var sequenceCallbackInst = CallbackInstrument()
     let mixer = Mixer()
     let chordDelay: Delay
     let sequenceDelay: Delay
+    let sequenceReverb: CostelloReverb
+    let sequenceReverbDryWetMixer: DryWetMixer
 
     var lastChordHadAttack = false
 
@@ -56,7 +59,7 @@ class TestEngine {
         bassSampler = Sampler(sampleDescriptor: desc, file: bassSample)
         bassSampler.buildSimpleKeyMap()
 
-        let sequenceSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_bw_saw/AKWF_saw_0001.wav"))!)
+        let sequenceSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_bw_squ/AKWF_squ_0006.wav"))!)
         sequenceSampler = Sampler(sampleDescriptor: desc, file: sequenceSample)
         sequenceSampler.buildSimpleKeyMap()
         
@@ -110,49 +113,85 @@ class TestEngine {
         bassSampler.releaseDuration = 0.3
         
         bassSampler.filterEnable = 1
-        bassSampler.filterCutoff = 100
+        bassSampler.filterCutoff = 10
         bassSampler.filterStrength = 0
         bassSampler.filterAttackDuration = 0
+        bassSampler.keyTrackingFraction = 0
         
         bassSampler.masterVolume = 0.2
         
         let bassTrack = sequencer.addTrack(for: bassSampler)
         bassTrack.length = 4
-        let baseBassNote: UInt8 = 24
+        let baseBassNote: UInt8 = 36
         bassTrack.sequence.add(noteNumber: baseBassNote + 0, position: 0, duration: 2)
         bassTrack.sequence.add(noteNumber: baseBassNote + 7, position: 3, duration: 0.9)
         
         // MARK: Sequence
 
-        sequenceSampler.attackDuration = 0
+        sequenceDelay = Delay(sequenceSampler)
+        sequenceDelay.feedback = 70
+        sequenceDelay.time = (60 / 120) * (4 / 3)
+        sequenceDelay.dryWetMix = 35
+        sequenceDelay.lowPassCutoff = 500
+        
+        sequenceReverb = CostelloReverb(sequenceDelay)
+        
+        sequenceReverbDryWetMixer = DryWetMixer(sequenceReverb, sequenceDelay)
+        sequenceReverbDryWetMixer.balance = 0.5
+        
+        sequenceSampler.isMonophonic = 1
+        sequenceSampler.attackDuration = 0.01
         sequenceSampler.decayDuration = 0.5
-        sequenceSampler.sustainLevel = 1.0
+        sequenceSampler.sustainLevel = 0
         sequenceSampler.releaseDuration = 0.3
         
         sequenceSampler.filterEnable = 1
-        sequenceSampler.filterCutoff = 1
-        sequenceSampler.filterResonance = 0
-        sequenceSampler.filterStrength = 0
-        sequenceSampler.filterDecayDuration = 0.0
+        sequenceSampler.filterCutoff = 0
+        sequenceSampler.filterResonance = 0.5
+        sequenceSampler.filterStrength = 1
+        sequenceSampler.filterAttackDuration = 0.01
+        sequenceSampler.filterDecayDuration = 0.05
         sequenceSampler.filterSustainLevel = 0
-        sequenceSampler.filterReleaseDuration = 0.1
+        sequenceSampler.filterReleaseDuration = 0
+        sequenceSampler.keyTrackingFraction = 0.0
+        sequenceSampler.filterEnvelopeVelocityScaling = 1
         
         sequenceSampler.masterVolume = 0.1
         
+        sequenceCallbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
+            if (status != 128) {
+                return
+            }
+            
+//            self.sequenceSampler.filterStrength = Float.random(in: 0...10)
+        })
+        
         let sequenceTrack = sequencer.addTrack(for: sequenceSampler)
-        sequenceTrack.length = 4
+        let sequenceCallbackTrack = sequencer.addTrack(for: sequenceCallbackInst)
+        
+        sequenceTrack.length = 8
         let baseSequenceNote: UInt8 = 60
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
-            if (Float.random(in: 0...1) > 0.5) {
-                sequenceTrack.sequence.add(noteNumber: baseSequenceNote, position: beat, duration: 1)
+            let intervalRandom = Float.random(in: 0...1)
+            
+            var interval: UInt8 = 0
+            if (beat > 0 && intervalRandom > 0.33)
+            {
+                interval = 3
+            }
+            else if (beat > 0 && intervalRandom > 0.66)
+            {
+                interval = 7
+            }
+            
+            if (Float.random(in: 0...1) > 0.6) {
+                sequenceTrack.sequence.add(noteNumber: baseSequenceNote + interval, velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
+                sequenceCallbackTrack.sequence.add(noteNumber: baseSequenceNote + interval, velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
             }
         }
         
-        sequenceDelay = Delay(sequenceSampler)
-        sequenceDelay.feedback = 80
-        sequenceDelay.time = (60 / 120) * (1 / 4)
-        sequenceDelay.dryWetMix = 0
-        sequenceDelay.lowPassCutoff = 1200
+        
+        // MARK: Engine
                 
         callbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
             if (status != 128) {
@@ -173,11 +212,12 @@ class TestEngine {
         callbackTrack.length = 4
         callbackTrack.sequence.add(noteNumber: 1, position: 0, duration: 0)
 
-//        mixer.addInput(drumSampler)
-//        mixer.addInput(chordDelay)
-//        mixer.addInput(bassSampler)
-        mixer.addInput(sequenceDelay)
+        mixer.addInput(drumSampler)
+        mixer.addInput(chordDelay)
+        mixer.addInput(bassSampler)
+        mixer.addInput(sequenceReverbDryWetMixer)
         mixer.addInput(callbackInst)
+        mixer.addInput(sequenceCallbackInst)
         
         engine.output = mixer
         
