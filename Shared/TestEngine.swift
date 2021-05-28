@@ -15,12 +15,13 @@ class TestEngine {
     let drumSampler = AppleSampler()
     let chordSampler: Sampler
     let bassSampler: Sampler
+    let sequenceSampler: Sampler
     let sequencer = Sequencer()
     var callbackInst = CallbackInstrument()
     let mixer = Mixer()
-//    let chordFilter: MoogLadder
     let chordDelay: Delay
-    
+    let sequenceDelay: Delay
+
     var lastChordHadAttack = false
 
     init() {
@@ -54,7 +55,13 @@ class TestEngine {
         let bassSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_bw_sin/AKWF_sin_0001.wav"))!)
         bassSampler = Sampler(sampleDescriptor: desc, file: bassSample)
         bassSampler.buildSimpleKeyMap()
+
+        let sequenceSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_bw_saw/AKWF_saw_0001.wav"))!)
+        sequenceSampler = Sampler(sampleDescriptor: desc, file: sequenceSample)
+        sequenceSampler.buildSimpleKeyMap()
         
+        // MARK: Drums
+
         let drumTrack = sequencer.addTrack(for: drumSampler)
         drumTrack.length = 4
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
@@ -66,7 +73,9 @@ class TestEngine {
 //            }
             drumTrack.sequence.add(noteNumber: 30, velocity: UInt8.random(in: 40...80), position: Double(beat), duration: 1.0)
         }
-        
+
+        // MARK: Chord
+
         chordSampler.attackDuration = 0.01
         chordSampler.decayDuration = 0.5
         chordSampler.sustainLevel = 0
@@ -87,6 +96,14 @@ class TestEngine {
         chordTrack.sequence.add(noteNumber: baseNote + 3, position: 0.5, duration: 1)
         chordTrack.sequence.add(noteNumber: baseNote + 7, position: 0.5, duration: 1)
         
+        chordDelay = Delay(chordSampler)
+        chordDelay.feedback = 80
+        chordDelay.time = (60 / 120) * (3 / 4)
+        chordDelay.dryWetMix = 40
+        chordDelay.lowPassCutoff = 1200
+        
+        // MARK: Bass
+
         bassSampler.attackDuration = 0
         bassSampler.decayDuration = 0.5
         bassSampler.sustainLevel = 1.0
@@ -103,14 +120,39 @@ class TestEngine {
         bassTrack.length = 4
         let baseBassNote: UInt8 = 24
         bassTrack.sequence.add(noteNumber: baseBassNote + 0, position: 0, duration: 2)
-//        bassTrack.sequence.add(noteNumber: baseBassNote + 0, position: 2.5, duration: 0.5)
         bassTrack.sequence.add(noteNumber: baseBassNote + 7, position: 3, duration: 0.9)
         
-        chordDelay = Delay(chordSampler)
-        chordDelay.feedback = 80
-        chordDelay.time = (60 / 120) * (3 / 4)
-        chordDelay.dryWetMix = 40
-        chordDelay.lowPassCutoff = 1200
+        // MARK: Sequence
+
+        sequenceSampler.attackDuration = 0
+        sequenceSampler.decayDuration = 0.5
+        sequenceSampler.sustainLevel = 1.0
+        sequenceSampler.releaseDuration = 0.3
+        
+        sequenceSampler.filterEnable = 1
+        sequenceSampler.filterCutoff = 1
+        sequenceSampler.filterResonance = 0
+        sequenceSampler.filterStrength = 0
+        sequenceSampler.filterDecayDuration = 0.0
+        sequenceSampler.filterSustainLevel = 0
+        sequenceSampler.filterReleaseDuration = 0.1
+        
+        sequenceSampler.masterVolume = 0.1
+        
+        let sequenceTrack = sequencer.addTrack(for: sequenceSampler)
+        sequenceTrack.length = 4
+        let baseSequenceNote: UInt8 = 60
+        for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
+            if (Float.random(in: 0...1) > 0.5) {
+                sequenceTrack.sequence.add(noteNumber: baseSequenceNote, position: beat, duration: 1)
+            }
+        }
+        
+        sequenceDelay = Delay(sequenceSampler)
+        sequenceDelay.feedback = 80
+        sequenceDelay.time = (60 / 120) * (1 / 4)
+        sequenceDelay.dryWetMix = 0
+        sequenceDelay.lowPassCutoff = 1200
                 
         callbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
             if (status != 128) {
@@ -131,9 +173,10 @@ class TestEngine {
         callbackTrack.length = 4
         callbackTrack.sequence.add(noteNumber: 1, position: 0, duration: 0)
 
-        mixer.addInput(drumSampler)
-        mixer.addInput(chordDelay)
-        mixer.addInput(bassSampler)
+//        mixer.addInput(drumSampler)
+//        mixer.addInput(chordDelay)
+//        mixer.addInput(bassSampler)
+        mixer.addInput(sequenceDelay)
         mixer.addInput(callbackInst)
         
         engine.output = mixer
