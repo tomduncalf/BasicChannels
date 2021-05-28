@@ -1,5 +1,5 @@
 //
-//  TestEngine.swift
+//  BasicEngine.swift
 //  BasicChannels
 //
 //  Created by Tom Duncalf on 26/05/2021.
@@ -10,7 +10,7 @@ import AudioKit
 import CAudioKit
 import AVFoundation
 
-class TestEngine {
+class BasicEngine {
     let engine = AudioEngine()
     let drumSampler = AppleSampler()
     let chordSampler: Sampler
@@ -25,21 +25,25 @@ class TestEngine {
     let sequenceReverb: CostelloReverb
     let sequenceReverbDryWetMixer: DryWetMixer
 
+    let tempo: Double = 120
+    var secsPerBeat: Float
+    
     var lastChordHadAttack = false
 
     init() {
-        do {
-            let sampleNames = ["bass_drum_C1", "snare_D1", "closed_hi_hat_F#1"]
-            let sampleFiles = try sampleNames.map { (name) -> AVAudioFile in
-                try AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/\(name).wav"))!)
-            }
-            try drumSampler.loadAudioFiles(sampleFiles)
-            
-        } catch let err {
-            Log("Error loading sample \(err)")
+        // MARK: Setup
+        
+        secsPerBeat = Float (60 / tempo)
+        
+        // MARK: Load samples
+        
+        let drumSampleNames = ["bass_drum_C1", "snare_D1", "closed_hi_hat_F#1"]
+        let drumSampleFiles = drumSampleNames.map { (name) -> AVAudioFile in
+            try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/\(name).wav"))!)
         }
-
-        let desc = SampleDescriptor(noteNumber: 26,
+        try! drumSampler.loadAudioFiles(drumSampleFiles)
+        
+        let akSingleCycleDescription = SampleDescriptor(noteNumber: 26,
                                  noteFrequency: 44100.0/600,
                                  minimumNoteNumber: 0,
                                  maximumNoteNumber: 127,
@@ -52,15 +56,15 @@ class TestEngine {
                                  endPoint: 0.0)
 
         let chordSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_0010/AKWF_0908.wav"))!)
-        chordSampler = Sampler(sampleDescriptor: desc, file: chordSample)
+        chordSampler = Sampler(sampleDescriptor: akSingleCycleDescription, file: chordSample)
         chordSampler.buildSimpleKeyMap()
         
         let bassSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_bw_sin/AKWF_sin_0001.wav"))!)
-        bassSampler = Sampler(sampleDescriptor: desc, file: bassSample)
+        bassSampler = Sampler(sampleDescriptor: akSingleCycleDescription, file: bassSample)
         bassSampler.buildSimpleKeyMap()
 
-        let sequenceSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_bw_squ/AKWF_squ_0006.wav"))!)
-        sequenceSampler = Sampler(sampleDescriptor: desc, file: sequenceSample)
+        let sequenceSample = try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/AKWF/AKWF_bw_squ/AKWF_squ_0015.wav"))!)
+        sequenceSampler = Sampler(sampleDescriptor: akSingleCycleDescription, file: sequenceSample)
         sequenceSampler.buildSimpleKeyMap()
         
         // MARK: Drums
@@ -68,13 +72,13 @@ class TestEngine {
         let drumTrack = sequencer.addTrack(for: drumSampler)
         drumTrack.length = 4
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
+            // Kicks
             if (beat.truncatingRemainder(dividingBy: 1) == 0) {
                 drumTrack.sequence.add(noteNumber: 24, position: Double(beat), duration: 1.0)
             }
-//            if (beat.truncatingRemainder(dividingBy: 2) == 1) {
-//                drumTrack.sequence.add(noteNumber: 26, position: Double(beat), duration: 1.0)
-//            }
-            drumTrack.sequence.add(noteNumber: 30, velocity: UInt8.random(in: 40...80), position: Double(beat), duration: 1.0)
+            
+            // Closed hi hats
+            drumTrack.sequence.add(noteNumber: 30, velocity: UInt8.random(in: 20...40), position: Double(beat), duration: 1.0)
         }
 
         // MARK: Chord
@@ -101,7 +105,7 @@ class TestEngine {
         
         chordDelay = Delay(chordSampler)
         chordDelay.feedback = 80
-        chordDelay.time = (60 / 120) * (3 / 4)
+        chordDelay.time = secsPerBeat * (3 / 4)
         chordDelay.dryWetMix = 40
         chordDelay.lowPassCutoff = 1200
         
@@ -129,12 +133,13 @@ class TestEngine {
         // MARK: Sequence
 
         sequenceDelay = Delay(sequenceSampler)
-        sequenceDelay.feedback = 70
-        sequenceDelay.time = (60 / 120) * (4 / 3)
+        sequenceDelay.feedback = 90
+        sequenceDelay.time = secsPerBeat * (4 / 3)
         sequenceDelay.dryWetMix = 35
-        sequenceDelay.lowPassCutoff = 500
+        sequenceDelay.lowPassCutoff = 800
         
         sequenceReverb = CostelloReverb(sequenceDelay)
+        sequenceReverb.feedback = 0.7
         
         sequenceReverbDryWetMixer = DryWetMixer(sequenceReverb, sequenceDelay)
         sequenceReverbDryWetMixer.balance = 0.5
@@ -145,6 +150,7 @@ class TestEngine {
         sequenceSampler.sustainLevel = 0
         sequenceSampler.releaseDuration = 0.3
         
+        // TODO This is a bit clicky
         sequenceSampler.filterEnable = 1
         sequenceSampler.filterCutoff = 0
         sequenceSampler.filterResonance = 0.5
@@ -156,49 +162,49 @@ class TestEngine {
         sequenceSampler.keyTrackingFraction = 0.0
         sequenceSampler.filterEnvelopeVelocityScaling = 1
         
-        sequenceSampler.masterVolume = 0.1
-        
-        sequenceCallbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
-            if (status != 128) {
-                return
-            }
-            
-//            self.sequenceSampler.filterStrength = Float.random(in: 0...10)
-        })
+        sequenceSampler.masterVolume = 0.05
         
         let sequenceTrack = sequencer.addTrack(for: sequenceSampler)
         let sequenceCallbackTrack = sequencer.addTrack(for: sequenceCallbackInst)
         
         sequenceTrack.length = 8
         let baseSequenceNote: UInt8 = 60
+        var isFirstNote = true
+        
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
-            let intervalRandom = Float.random(in: 0...1)
-            
-            var interval: UInt8 = 0
-            if (beat > 0 && intervalRandom > 0.33)
-            {
-                interval = 3
-            }
-            else if (beat > 0 && intervalRandom > 0.66)
-            {
-                interval = 7
-            }
-            
             if (Float.random(in: 0...1) > 0.6) {
+                let intervalRandom = Float.random(in: 0...1)
+                
+                var interval: UInt8 = 0
+                if (!isFirstNote && intervalRandom > 0.25)
+                {
+                    interval = 3
+                }
+                else if (!isFirstNote && intervalRandom > 0.5)
+                {
+                    interval = 7
+                }
+                else if (!isFirstNote && intervalRandom > 0.75)
+                {
+                    interval = 12
+                }
+
+                isFirstNote = false
+                
                 sequenceTrack.sequence.add(noteNumber: baseSequenceNote + interval, velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
                 sequenceCallbackTrack.sequence.add(noteNumber: baseSequenceNote + interval, velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
             }
         }
         
         
-        // MARK: Engine
+        // MARK: Chord callback
                 
         callbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
             if (status != 128) {
                 return
             }
             
-            self.chordSampler.filterStrength = Float.random(in: 10...400)
+            self.chordSampler.filterStrength = Float.random(in: 5...200)
             if (!self.lastChordHadAttack && Float.random(in: 0...1) > 0.25) {
                 self.chordSampler.filterAttackDuration = Float.random(in: 0.25...2.5)
                 self.lastChordHadAttack = true
@@ -207,17 +213,31 @@ class TestEngine {
                 self.lastChordHadAttack = false
             }
         })
-
+        
         let callbackTrack = sequencer.addTrack(for: callbackInst)
         callbackTrack.length = 4
         callbackTrack.sequence.add(noteNumber: 1, position: 0, duration: 0)
 
+        // MARK: Sequence callback
+        
+        sequenceCallbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
+            if (status != 128) {
+                return
+            }
+            
+            self.sequenceSampler.filterStrength = Float.random(in: 0.5...2)
+        })
+        
+        // MARK: Mixer
+        
         mixer.addInput(drumSampler)
         mixer.addInput(chordDelay)
         mixer.addInput(bassSampler)
         mixer.addInput(sequenceReverbDryWetMixer)
         mixer.addInput(callbackInst)
         mixer.addInput(sequenceCallbackInst)
+
+        // MARK: Engine
         
         engine.output = mixer
         
@@ -226,12 +246,8 @@ class TestEngine {
         } catch let err {
             Log("Error starting engine \(err)")
         }
-        
-//        let timer = Timer.scheduledTimer(withTimeInterval: 1/30, repeats: true) { timer in
-//            chordDelay.time += 0.001
-//        }
 
-        sequencer.tempo = 120
+        sequencer.tempo = tempo
         sequencer.play()
     }
 }

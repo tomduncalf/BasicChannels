@@ -11,7 +11,7 @@ import SwiftUI
 struct BasicChannelsApp: App {
     let persistenceController = PersistenceController.shared
     
-    let engine = TestEngine()
+    let engine = BasicEngine()
 
     var body: some Scene {
         WindowGroup {
