@@ -19,6 +19,8 @@ class TestEngine {
     let mixer = Mixer()
 //    let chordFilter: MoogLadder
     let chordDelay: Delay
+    
+    var lastChordHadAttack = false
 
     init() {
         let chordSample: AVAudioFile
@@ -48,41 +50,65 @@ class TestEngine {
                                  startPoint: 0.0,
                                  endPoint: 0.0)
         chordSampler = Sampler(sampleDescriptor: desc, file: chordSample)
-
-        callbackInst = CallbackInstrument(midiCallback: { (_, note, _) in
-            print(note)
-        })
+        chordSampler.buildSimpleKeyMap()
         
         let drumTrack = sequencer.addTrack(for: drumSampler)
         drumTrack.length = 4
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
-//            if (beat.truncatingRemainder(dividingBy: 1) == 0) {
-//                drumTrack.sequence.add(noteNumber: 24, position: Double(beat), duration: 1.0)
-//            }
+            if (beat.truncatingRemainder(dividingBy: 1) == 0) {
+                drumTrack.sequence.add(noteNumber: 24, position: Double(beat), duration: 1.0)
+            }
 //            if (beat.truncatingRemainder(dividingBy: 2) == 1) {
 //                drumTrack.sequence.add(noteNumber: 26, position: Double(beat), duration: 1.0)
 //            }
-//            drumTrack.sequence.add(noteNumber: 30, position: Double(beat), duration: 1.0)
+            drumTrack.sequence.add(noteNumber: 30, velocity: UInt8.random(in: 40...80), position: Double(beat), duration: 1.0)
         }
+        
+        chordSampler.attackDuration = 0.01
+        chordSampler.decayDuration = 0.3
+        chordSampler.sustainLevel = 0
+        chordSampler.releaseDuration = 0.5
+        
+        chordSampler.filterEnable = 1
+        chordSampler.filterCutoff = 0
+        chordSampler.filterStrength = 1000
+        chordSampler.filterAttackDuration = 0
         
         let chordTrack = sequencer.addTrack(for: chordSampler)
         drumTrack.length = 4
-        chordTrack.sequence.add(noteNumber: 60, position: 1.5, duration: 1)
+        chordTrack.sequence.add(noteNumber: 24, position: 0.5, duration: 1)
                 
 //        chordFilter = MoogLadder(chordSampler, cutoffFrequency: 5000, resonance: 0.5)
         
         chordDelay = Delay(chordSampler)
         chordDelay.feedback = 70
-        chordDelay.time = 0.40
+        chordDelay.time = 0.395
         chordDelay.dryWetMix = 40
-        chordDelay.lowPassCutoff = 1000
-        
+        chordDelay.lowPassCutoff = 1500
+                
+        callbackInst = CallbackInstrument(midiCallback: { (_, note, _) in
+            self.chordSampler.filterStrength = Float.random(in: 50...500)
+            if (!self.lastChordHadAttack && Float.random(in: 0...1) > 0.33) {
+                Log("attack")
+                self.chordSampler.filterAttackDuration = Float.random(in: 0.25...1.5)
+                self.lastChordHadAttack = true
+            } else {
+                Log("no attack")
+                self.chordSampler.filterAttackDuration = 0
+                self.lastChordHadAttack = false
+            }
+        })
+
+        let callbackTrack = sequencer.addTrack(for: callbackInst)
+        callbackTrack.length = 4
+        callbackTrack.sequence.add(noteNumber: 1, position: 0, duration: 0)
+
         mixer.addInput(drumSampler)
         mixer.addInput(chordDelay)
         mixer.addInput(callbackInst)
         
         engine.output = mixer
-
+        
         do {
             try engine.start()
         } catch let err {
