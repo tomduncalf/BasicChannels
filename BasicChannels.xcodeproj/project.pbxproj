@@ -7,10 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1362532226628483000D6BAA /* Progressions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362532126628483000D6BAA /* Progressions.swift */; };
-		1362532326628483000D6BAA /* Progressions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362532126628483000D6BAA /* Progressions.swift */; };
+		1362532226628483000D6BAA /* Progression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362532126628483000D6BAA /* Progression.swift */; };
+		1362532326628483000D6BAA /* Progression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362532126628483000D6BAA /* Progression.swift */; };
 		1362532E26629706000D6BAA /* SequencerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362532D26629706000D6BAA /* SequencerExtensions.swift */; };
 		1362532F26629706000D6BAA /* SequencerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362532D26629706000D6BAA /* SequencerExtensions.swift */; };
+		1362534126629AD4000D6BAA /* ProgressionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362534026629AD4000D6BAA /* ProgressionManager.swift */; };
+		1362534226629AD4000D6BAA /* ProgressionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362534026629AD4000D6BAA /* ProgressionManager.swift */; };
+		1362534826629AFA000D6BAA /* BreakdownProgression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362534726629AFA000D6BAA /* BreakdownProgression.swift */; };
+		1362534926629AFA000D6BAA /* BreakdownProgression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362534726629AFA000D6BAA /* BreakdownProgression.swift */; };
 		13ACAE32265EB0990052F0A7 /* Tests_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ACAE31265EB0990052F0A7 /* Tests_iOS.swift */; };
 		13ACAE3D265EB0990052F0A7 /* Tests_macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13ACAE3C265EB0990052F0A7 /* Tests_macOS.swift */; };
 		13ACAE3F265EB0990052F0A7 /* BasicChannels.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 13ACAE13265EB0980052F0A7 /* BasicChannels.xcdatamodeld */; };
@@ -48,8 +52,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1362532126628483000D6BAA /* Progressions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progressions.swift; sourceTree = "<group>"; };
+		1362532126628483000D6BAA /* Progression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progression.swift; sourceTree = "<group>"; };
 		1362532D26629706000D6BAA /* SequencerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequencerExtensions.swift; sourceTree = "<group>"; };
+		1362534026629AD4000D6BAA /* ProgressionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionManager.swift; sourceTree = "<group>"; };
+		1362534726629AFA000D6BAA /* BreakdownProgression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakdownProgression.swift; sourceTree = "<group>"; };
 		13A5E73B2661477600F2BECC /* AudioKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AudioKit; path = ../AudioKit; sourceTree = "<group>"; };
 		13ACAE14265EB0980052F0A7 /* Shared.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shared.xcdatamodel; sourceTree = "<group>"; };
 		13ACAE15265EB0980052F0A7 /* BasicChannelsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicChannelsApp.swift; sourceTree = "<group>"; };
@@ -107,7 +113,9 @@
 		1362531C26628465000D6BAA /* Progressions */ = {
 			isa = PBXGroup;
 			children = (
-				1362532126628483000D6BAA /* Progressions.swift */,
+				1362532126628483000D6BAA /* Progression.swift */,
+				1362534026629AD4000D6BAA /* ProgressionManager.swift */,
+				1362534726629AFA000D6BAA /* BreakdownProgression.swift */,
 			);
 			path = Progressions;
 			sourceTree = "<group>";
@@ -371,10 +379,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				13ACAE41265EB0990052F0A7 /* BasicChannelsApp.swift in Sources */,
+				1362534126629AD4000D6BAA /* ProgressionManager.swift in Sources */,
 				13B46766265EC1D5001AAFDC /* BasicEngine.swift in Sources */,
 				13ACAE45265EB0990052F0A7 /* Persistence.swift in Sources */,
 				1362532E26629706000D6BAA /* SequencerExtensions.swift in Sources */,
-				1362532226628483000D6BAA /* Progressions.swift in Sources */,
+				1362534826629AFA000D6BAA /* BreakdownProgression.swift in Sources */,
+				1362532226628483000D6BAA /* Progression.swift in Sources */,
 				13ACAE3F265EB0990052F0A7 /* BasicChannels.xcdatamodeld in Sources */,
 				13ACAE43265EB0990052F0A7 /* ContentView.swift in Sources */,
 			);
@@ -385,10 +395,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				13ACAE42265EB0990052F0A7 /* BasicChannelsApp.swift in Sources */,
+				1362534226629AD4000D6BAA /* ProgressionManager.swift in Sources */,
 				13B46767265EC1D5001AAFDC /* BasicEngine.swift in Sources */,
 				13ACAE46265EB0990052F0A7 /* Persistence.swift in Sources */,
 				1362532F26629706000D6BAA /* SequencerExtensions.swift in Sources */,
-				1362532326628483000D6BAA /* Progressions.swift in Sources */,
+				1362534926629AFA000D6BAA /* BreakdownProgression.swift in Sources */,
+				1362532326628483000D6BAA /* Progression.swift in Sources */,
 				13ACAE40265EB0990052F0A7 /* BasicChannels.xcdatamodeld in Sources */,
 				13ACAE44265EB0990052F0A7 /* ContentView.swift in Sources */,
 			);
