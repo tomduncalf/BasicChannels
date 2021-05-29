@@ -24,6 +24,7 @@ class BasicEngine {
     let sequenceDelay: Delay
     let sequenceReverb: CostelloReverb
     let sequenceReverbDryWetMixer: DryWetMixer
+    let drumsHighpassFilter: HighPassButterworthFilter
 
     let tempo: Double = 120
     var secsPerBeat: Float
@@ -81,6 +82,9 @@ class BasicEngine {
             drumTrack.sequence.add(noteNumber: 30, velocity: UInt8.random(in: 20...40), position: Double(beat), duration: 1.0)
         }
 
+        drumsHighpassFilter = HighPassButterworthFilter(drumSampler)
+        drumsHighpassFilter.cutoffFrequency = 0
+        
         // MARK: Chord
 
         chordSampler.attackDuration = 0.01
@@ -230,7 +234,7 @@ class BasicEngine {
         
         // MARK: Mixer
         
-        mixer.addInput(drumSampler)
+        mixer.addInput(drumsHighpassFilter)
         mixer.addInput(chordDelay)
         mixer.addInput(bassSampler)
         mixer.addInput(sequenceReverbDryWetMixer)
@@ -249,5 +253,8 @@ class BasicEngine {
 
         sequencer.tempo = tempo
         sequencer.play()
+        
+        let breakdown = BreakdownProgression(self)
+        breakdown.run()
     }
 }
