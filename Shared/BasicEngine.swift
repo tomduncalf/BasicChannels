@@ -31,6 +31,8 @@ class BasicEngine {
     let sequenceReverbDryWetMixer: DryWetMixer
     let drumsHighpassFilter: HighPassButterworthFilter
 
+    var progressionManager: ProgressionManager? = nil
+
     let tempo: Double = 120
     var secsPerBeat: Float
     
@@ -188,13 +190,21 @@ class BasicEngine {
         
         sequenceSampler.masterVolume = 0.05
         
+        sequenceCallbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
+            if (status != 128) {
+                return
+            }
+            
+            self.sequenceSampler.filterStrength = Float.random(in: 0.2...3)
+        })
+
         let sequenceTrack = sequencer.addTrack(for: sequenceSampler)
         let sequenceCallbackTrack = sequencer.addTrack(for: sequenceCallbackInst)
         
         sequenceTrack.length = 8
         let baseSequenceNote: UInt8 = 60
         var isFirstNote = true
-        
+            
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
             if (Float.random(in: 0...1) > 0.6) {
                 let interval = isFirstNote ? 0 : [0, 3, 7, 12, 3 + 12].randomElement()!
@@ -205,7 +215,6 @@ class BasicEngine {
                 sequenceCallbackTrack.sequence.add(noteNumber: baseSequenceNote + UInt8(interval), velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
             }
         }
-        
         
         // MARK: Chord callback
                 
@@ -227,16 +236,6 @@ class BasicEngine {
         let callbackTrack = sequencer.addTrack(for: callbackInst)
         callbackTrack.length = 4
         callbackTrack.sequence.add(noteNumber: 1, position: 0, duration: 0)
-
-        // MARK: Sequence callback
-        
-        sequenceCallbackInst = CallbackInstrument(midiCallback: { (status, note, _) in
-            if (status != 128) {
-                return
-            }
-            
-            self.sequenceSampler.filterStrength = Float.random(in: 0.5...2)
-        })
         
         // MARK: Mixer
         
@@ -250,6 +249,8 @@ class BasicEngine {
 
         // MARK: Engine
         
+        progressionManager = ProgressionManager(self)
+        
         engine.output = mixer
         
         do {
@@ -260,8 +261,5 @@ class BasicEngine {
 
         sequencer.tempo = tempo
         sequencer.play()
-        
-        let breakdown = BreakdownProgression(self)
-        breakdown.run()
     }
 }

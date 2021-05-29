@@ -13,54 +13,47 @@ class Progression {
     let engine: BasicEngine
     var lengthInBars: Int = 4
     
-    var barsElapsed = 0
-    var callbackInstrument = CallbackInstrument()
-    var callbackTrack: SequencerTrack?
-    
-    // Maybe we just have one ever present callback instrument that resets its count when it hands over?
+    // Maybe we just have one ever present callback instrument that resets its count?
     init (_ engine: BasicEngine) {
         self.engine = engine
-        self.callbackInstrument = CallbackInstrument(midiCallback:  { (status, note, _) in
-            if (status != 128) {
-                return
-            }
-            
-            self.onBarCallback(self.barsElapsed)
-            
-            self.barsElapsed += 1
-        })
-    }
-    
-    func run() {
-        callbackTrack = engine.sequencer.addTrack(for: callbackInstrument)
-        let lengthInBeats = lengthInBars * 4
-        callbackTrack!.length = Double(lengthInBeats)
-
-        for beat in 0...lengthInBeats {
-            if (beat % 4 != 0) {
-                continue
-            }
-            
-            callbackTrack!.sequence.add(noteNumber: 1, position: Double(beat), duration: 0)
-        }
-        
-        callbackTrack!.play()
-        engine.mixer.addInput(callbackInstrument)
-    }
-    
-    func teardown() {
-        engine.sequencer.removeTrack(track: callbackTrack!)
     }
     
     func onBarCallback(_ barsElapsed: Int) -> Void {
     }
 }
 
-extension Sequencer {
-    public func removeTrack(track: SequencerTrack) {
-        if let index = tracks.firstIndex(where: { $0 === track }) {
-            tracks.remove(at: index)
-        }
+class ProgressionManager {
+    let engine: BasicEngine
+    var activeProgression: Progression
+
+    var barsElapsed = 0
+    var callbackInstrument = CallbackInstrument()
+    var callbackTrack: SequencerTrack? = nil
+    
+    init (_ engine: BasicEngine) {
+        self.engine = engine
+        activeProgression = BreakdownProgression(engine)
+
+        self.callbackInstrument = CallbackInstrument(midiCallback:  { (status, note, _) in
+            if (status != 128) {
+                return
+            }
+            
+            self.activeProgression.onBarCallback(self.barsElapsed)
+            
+            self.barsElapsed += 1
+        })
+        
+        callbackTrack = engine.sequencer.addTrack(for: callbackInstrument)
+        callbackTrack!.length = 4
+        callbackTrack!.loopEnabled = true
+        callbackTrack!.sequence.add(noteNumber: 1, position: 0, duration: 0)
+        
+        engine.mixer.addInput(callbackInstrument)
+    }
+    
+    func teardown() {
+        engine.sequencer.removeTrack(track: callbackTrack!)
     }
 }
 
