@@ -7,6 +7,7 @@
 
 import Foundation
 import AudioKit
+import CAudioKit
 
 class Progression {
     let engine: BasicEngine
@@ -16,6 +17,7 @@ class Progression {
     var callbackInstrument = CallbackInstrument()
     var callbackTrack: SequencerTrack?
     
+    // Maybe we just have one ever present callback instrument that resets its count when it hands over?
     init (_ engine: BasicEngine) {
         self.engine = engine
         self.callbackInstrument = CallbackInstrument(midiCallback:  { (status, note, _) in
@@ -70,8 +72,14 @@ class BreakdownProgression : Progression {
     
     override func onBarCallback(_ barsElapsed: Int) {
         if (barsElapsed == 4) {
-            engine.drumsHighpassFilter.$cutoffFrequency.ramp(to: 10000, duration: Float(Duration(beats: 4, tempo: engine.tempo).seconds))
+            engine.drumsHighpassFilter.$cutoffFrequency.automate(events: [
+                AutomationEvent(targetValue: 2000, startTime: 0, rampDuration: Float(Duration(beats: 12, tempo: engine.tempo).seconds)),
+                AutomationEvent(targetValue: 10, startTime: Float(Duration(beats: 16, tempo: engine.tempo).seconds) - 0.1, rampDuration: 0.1)
+            ])
+        } else if (barsElapsed == 8) {
+            engine.openHiHatGain.gain = 0.3
         }
+        
         Log(barsElapsed)
     }
 }

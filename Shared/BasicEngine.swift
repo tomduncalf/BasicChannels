@@ -12,7 +12,12 @@ import AVFoundation
 
 class BasicEngine {
     let engine = AudioEngine()
+
     let drumSampler = AppleSampler()
+    let openHiHatSampler = AppleSampler()
+    let openHiHatGain: Fader
+    let openHiHatReverb: ChowningReverb
+
     let chordSampler: Sampler
     let bassSampler: Sampler
     let sequenceSampler: Sampler
@@ -44,6 +49,8 @@ class BasicEngine {
         }
         try! drumSampler.loadAudioFiles(drumSampleFiles)
         
+        try! openHiHatSampler.loadAudioFile(try! AVAudioFile(forReading: (Bundle.main.resourceURL?.appendingPathComponent("Samples/ma_808_A#1.wav"))!))
+        
         let akSingleCycleDescription = SampleDescriptor(noteNumber: 26,
                                  noteFrequency: 44100.0/600,
                                  minimumNoteNumber: 0,
@@ -72,6 +79,10 @@ class BasicEngine {
 
         let drumTrack = sequencer.addTrack(for: drumSampler)
         drumTrack.length = 4
+        
+        let openHiHatTrack = sequencer.addTrack(for: openHiHatSampler)
+        openHiHatTrack.length = 4
+
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
             // Kicks
             if (beat.truncatingRemainder(dividingBy: 1) == 0) {
@@ -80,10 +91,19 @@ class BasicEngine {
             
             // Closed hi hats
             drumTrack.sequence.add(noteNumber: 30, velocity: UInt8.random(in: 20...40), position: Double(beat), duration: 1.0)
+            
+            if (beat.truncatingRemainder(dividingBy: 1) == 0.5) {
+                openHiHatTrack.sequence.add(noteNumber: 34, position: beat, duration: 1.0)
+            }
         }
 
         drumsHighpassFilter = HighPassButterworthFilter(drumSampler)
         drumsHighpassFilter.cutoffFrequency = 0
+        
+        openHiHatGain = Fader(openHiHatSampler)
+        openHiHatGain.gain = 0
+        
+        openHiHatReverb = ChowningReverb(openHiHatGain)
         
         // MARK: Chord
 
@@ -177,26 +197,12 @@ class BasicEngine {
         
         for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
             if (Float.random(in: 0...1) > 0.6) {
-                let intervalRandom = Float.random(in: 0...1)
-                
-                var interval: UInt8 = 0
-                if (!isFirstNote && intervalRandom > 0.25)
-                {
-                    interval = 3
-                }
-                else if (!isFirstNote && intervalRandom > 0.5)
-                {
-                    interval = 7
-                }
-                else if (!isFirstNote && intervalRandom > 0.75)
-                {
-                    interval = 12
-                }
+                let interval = isFirstNote ? 0 : [0, 3, 7, 12, 3 + 12].randomElement()!
 
                 isFirstNote = false
                 
-                sequenceTrack.sequence.add(noteNumber: baseSequenceNote + interval, velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
-                sequenceCallbackTrack.sequence.add(noteNumber: baseSequenceNote + interval, velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
+                sequenceTrack.sequence.add(noteNumber: baseSequenceNote + UInt8(interval), velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
+                sequenceCallbackTrack.sequence.add(noteNumber: baseSequenceNote + UInt8(interval), velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
             }
         }
         
@@ -235,6 +241,7 @@ class BasicEngine {
         // MARK: Mixer
         
         mixer.addInput(drumsHighpassFilter)
+        mixer.addInput(openHiHatReverb)
         mixer.addInput(chordDelay)
         mixer.addInput(bassSampler)
         mixer.addInput(sequenceReverbDryWetMixer)
