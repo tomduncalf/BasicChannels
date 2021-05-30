@@ -30,7 +30,10 @@ class BasicEngine {
     let sequenceReverb: CostelloReverb
     let sequenceReverbDryWetMixer: DryWetMixer
     let drumsHighpassFilter: HighPassButterworthFilter
-
+    
+    var sequenceTrack: SequencerTrack? = nil
+    var sequenceCallbackTrack: SequencerTrack? = nil
+    
     var progressionManager: ProgressionManager? = nil
 
     let tempo: Double = 120
@@ -198,23 +201,10 @@ class BasicEngine {
             self.sequenceSampler.filterStrength = Float.random(in: 0.2...3)
         })
 
-        let sequenceTrack = sequencer.addTrack(for: sequenceSampler)
-        let sequenceCallbackTrack = sequencer.addTrack(for: sequenceCallbackInst)
+        sequenceTrack = sequencer.addTrack(for: sequenceSampler)
+        sequenceCallbackTrack = sequencer.addTrack(for: sequenceCallbackInst)
         
-        sequenceTrack.length = 8
-        let baseSequenceNote: UInt8 = 60
-        var isFirstNote = true
-            
-        for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
-            if (Float.random(in: 0...1) > 0.6) {
-                let interval = isFirstNote ? 0 : [0, 3, 7, 12, 3 + 12].randomElement()!
-
-                isFirstNote = false
-                
-                sequenceTrack.sequence.add(noteNumber: baseSequenceNote + UInt8(interval), velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
-                sequenceCallbackTrack.sequence.add(noteNumber: baseSequenceNote + UInt8(interval), velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
-            }
-        }
+        generateNewMelody()
         
         // MARK: Chord callback
                 
@@ -261,5 +251,22 @@ class BasicEngine {
 
         sequencer.tempo = tempo
         sequencer.play()
+    }
+    
+    func generateNewMelody() {
+        sequenceTrack!.length = 8
+        let baseSequenceNote: UInt8 = 60
+        var isFirstNote = true
+            
+        for beat in stride(from: 0.0, to: 4.0, by: 0.25) {
+            if (Float.random(in: 0...1) > 0.6) {
+                let interval = isFirstNote ? 0 : [0, 3, 7, 12, 3 + 12].randomElement()!
+
+                isFirstNote = false
+                
+                sequenceTrack!.sequence.add(noteNumber: baseSequenceNote + UInt8(interval), velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
+                sequenceCallbackTrack!.sequence.add(noteNumber: baseSequenceNote + UInt8(interval), velocity: UInt8.random(in: 0...127), position: beat, duration: 1)
+            }
+        }
     }
 }

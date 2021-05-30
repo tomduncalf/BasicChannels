@@ -15,7 +15,7 @@ struct BasicChannelsApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(engine)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
