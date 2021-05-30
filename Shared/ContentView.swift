@@ -23,24 +23,11 @@ struct ContentView: View {
     }
 
     var body: some View {
-//        List {
-//            ForEach(items) { item in
-//                Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-//            }
-//            .onDelete(perform: deleteItems)
-//        }
-        Button(action: { engine.generateNewMelody() }, label: {
-            Text("New melody")
-        })
-//        .toolbar {
-//            #if os(iOS)
-//            EditButton()
-//            #endif
-//
-//            Button(action: addItem) {
-//                Label("Add Item", systemImage: "plus")
-//            }
-//        }
+        HStack {
+            Button(action: { engine.melody.generateNewMelody() }, label: {
+                Text("Generate new melody")
+            })
+        }.frame(width: 400, height: 300, alignment: .center)
     }
 
     private func addItem() {

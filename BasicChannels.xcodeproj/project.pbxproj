@@ -32,6 +32,20 @@
 		13B46772265EC396001AAFDC /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = 13B46771265EC396001AAFDC /* AudioKit */; };
 		13B46793265EC576001AAFDC /* Samples in Resources */ = {isa = PBXBuildFile; fileRef = 13B46792265EC576001AAFDC /* Samples */; };
 		13B46794265EC576001AAFDC /* Samples in Resources */ = {isa = PBXBuildFile; fileRef = 13B46792265EC576001AAFDC /* Samples */; };
+		13F12CE52663F61D00B9B00C /* Drums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12CE42663F61D00B9B00C /* Drums.swift */; };
+		13F12CE62663F61D00B9B00C /* Drums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12CE42663F61D00B9B00C /* Drums.swift */; };
+		13F12CFD2663F74200B9B00C /* SingleCycleSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12CFC2663F74200B9B00C /* SingleCycleSampler.swift */; };
+		13F12CFE2663F74200B9B00C /* SingleCycleSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12CFC2663F74200B9B00C /* SingleCycleSampler.swift */; };
+		13F12D032663F77200B9B00C /* SamplerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D022663F77200B9B00C /* SamplerExtensions.swift */; };
+		13F12D042663F77200B9B00C /* SamplerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D022663F77200B9B00C /* SamplerExtensions.swift */; };
+		13F12D092663F86000B9B00C /* Stab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D082663F86000B9B00C /* Stab.swift */; };
+		13F12D0A2663F86000B9B00C /* Stab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D082663F86000B9B00C /* Stab.swift */; };
+		13F12D0F2663F86C00B9B00C /* EnginePart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D0E2663F86C00B9B00C /* EnginePart.swift */; };
+		13F12D102663F86C00B9B00C /* EnginePart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D0E2663F86C00B9B00C /* EnginePart.swift */; };
+		13F12D1C2663FB1500B9B00C /* Bass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D1B2663FB1500B9B00C /* Bass.swift */; };
+		13F12D1D2663FB1500B9B00C /* Bass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D1B2663FB1500B9B00C /* Bass.swift */; };
+		13F12D252663FB7A00B9B00C /* Melody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D242663FB7A00B9B00C /* Melody.swift */; };
+		13F12D262663FB7A00B9B00C /* Melody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F12D242663FB7A00B9B00C /* Melody.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,7 +83,7 @@
 		1362532D26629706000D6BAA /* SequencerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequencerExtensions.swift; sourceTree = "<group>"; };
 		1362534026629AD4000D6BAA /* ProgressionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressionManager.swift; sourceTree = "<group>"; };
 		1362534726629AFA000D6BAA /* BreakdownProgression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakdownProgression.swift; sourceTree = "<group>"; };
-		13A5E73B2661477600F2BECC /* AudioKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AudioKit; path = ../AudioKit; sourceTree = "<group>"; };
+		137DDB1C266411AA0057AFAA /* AudioKit */ = {isa = PBXFileReference; lastKnownFileType = folder; path = AudioKit; sourceTree = "<group>"; };
 		13ACAE14265EB0980052F0A7 /* Shared.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Shared.xcdatamodel; sourceTree = "<group>"; };
 		13ACAE15265EB0980052F0A7 /* BasicChannelsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicChannelsApp.swift; sourceTree = "<group>"; };
 		13ACAE16265EB0980052F0A7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -88,6 +102,13 @@
 		13ACAE3E265EB0990052F0A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13B46765265EC1D5001AAFDC /* BasicEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicEngine.swift; sourceTree = "<group>"; };
 		13B46792265EC576001AAFDC /* Samples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Samples; sourceTree = "<group>"; };
+		13F12CE42663F61D00B9B00C /* Drums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drums.swift; sourceTree = "<group>"; };
+		13F12CFC2663F74200B9B00C /* SingleCycleSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCycleSampler.swift; sourceTree = "<group>"; };
+		13F12D022663F77200B9B00C /* SamplerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplerExtensions.swift; sourceTree = "<group>"; };
+		13F12D082663F86000B9B00C /* Stab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stab.swift; sourceTree = "<group>"; };
+		13F12D0E2663F86C00B9B00C /* EnginePart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnginePart.swift; sourceTree = "<group>"; };
+		13F12D1B2663FB1500B9B00C /* Bass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bass.swift; sourceTree = "<group>"; };
+		13F12D242663FB7A00B9B00C /* Melody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Melody.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +157,7 @@
 		1362532C266296F9000D6BAA /* AudioKitExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				13F12D022663F77200B9B00C /* SamplerExtensions.swift */,
 				1362532D26629706000D6BAA /* SequencerExtensions.swift */,
 			);
 			path = AudioKitExtensions;
@@ -145,7 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				13B46792265EC576001AAFDC /* Samples */,
-				13A5E73B2661477600F2BECC /* AudioKit */,
+				137DDB1C266411AA0057AFAA /* AudioKit */,
 				13ACAE12265EB0980052F0A7 /* Shared */,
 				13ACAE1F265EB0990052F0A7 /* iOS */,
 				13ACAE26265EB0990052F0A7 /* macOS */,
@@ -160,13 +182,13 @@
 			isa = PBXGroup;
 			children = (
 				1362532C266296F9000D6BAA /* AudioKitExtensions */,
+				13F12CDD2663F60700B9B00C /* Engine */,
 				1362531C26628465000D6BAA /* Progressions */,
 				13ACAE15265EB0980052F0A7 /* BasicChannelsApp.swift */,
 				13ACAE16265EB0980052F0A7 /* ContentView.swift */,
 				13ACAE17265EB0980052F0A7 /* Persistence.swift */,
 				13ACAE18265EB0990052F0A7 /* Assets.xcassets */,
 				13ACAE13265EB0980052F0A7 /* BasicChannels.xcdatamodeld */,
-				13B46765265EC1D5001AAFDC /* BasicEngine.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -222,6 +244,28 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		13F12CDD2663F60700B9B00C /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				13F12D172663F9BC00B9B00C /* Parts */,
+				13B46765265EC1D5001AAFDC /* BasicEngine.swift */,
+				13F12CFC2663F74200B9B00C /* SingleCycleSampler.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		13F12D172663F9BC00B9B00C /* Parts */ = {
+			isa = PBXGroup;
+			children = (
+				13F12D1B2663FB1500B9B00C /* Bass.swift */,
+				13F12CE42663F61D00B9B00C /* Drums.swift */,
+				13F12D0E2663F86C00B9B00C /* EnginePart.swift */,
+				13F12D242663FB7A00B9B00C /* Melody.swift */,
+				13F12D082663F86000B9B00C /* Stab.swift */,
+			);
+			path = Parts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -394,13 +438,20 @@
 			files = (
 				13ACAE41265EB0990052F0A7 /* BasicChannelsApp.swift in Sources */,
 				1362534126629AD4000D6BAA /* ProgressionManager.swift in Sources */,
+				13F12D252663FB7A00B9B00C /* Melody.swift in Sources */,
 				13B46766265EC1D5001AAFDC /* BasicEngine.swift in Sources */,
+				13F12CE52663F61D00B9B00C /* Drums.swift in Sources */,
 				13ACAE45265EB0990052F0A7 /* Persistence.swift in Sources */,
 				1362532E26629706000D6BAA /* SequencerExtensions.swift in Sources */,
 				1362534826629AFA000D6BAA /* BreakdownProgression.swift in Sources */,
 				1362532226628483000D6BAA /* Progression.swift in Sources */,
+				13F12D092663F86000B9B00C /* Stab.swift in Sources */,
+				13F12CFD2663F74200B9B00C /* SingleCycleSampler.swift in Sources */,
 				13ACAE3F265EB0990052F0A7 /* BasicChannels.xcdatamodeld in Sources */,
+				13F12D032663F77200B9B00C /* SamplerExtensions.swift in Sources */,
+				13F12D1D2663FB1500B9B00C /* Bass.swift in Sources */,
 				13ACAE43265EB0990052F0A7 /* ContentView.swift in Sources */,
+				13F12D0F2663F86C00B9B00C /* EnginePart.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,13 +461,20 @@
 			files = (
 				13ACAE42265EB0990052F0A7 /* BasicChannelsApp.swift in Sources */,
 				1362534226629AD4000D6BAA /* ProgressionManager.swift in Sources */,
+				13F12D262663FB7A00B9B00C /* Melody.swift in Sources */,
 				13B46767265EC1D5001AAFDC /* BasicEngine.swift in Sources */,
+				13F12CE62663F61D00B9B00C /* Drums.swift in Sources */,
 				13ACAE46265EB0990052F0A7 /* Persistence.swift in Sources */,
 				1362532F26629706000D6BAA /* SequencerExtensions.swift in Sources */,
 				1362534926629AFA000D6BAA /* BreakdownProgression.swift in Sources */,
 				1362532326628483000D6BAA /* Progression.swift in Sources */,
+				13F12D0A2663F86000B9B00C /* Stab.swift in Sources */,
+				13F12CFE2663F74200B9B00C /* SingleCycleSampler.swift in Sources */,
 				13ACAE40265EB0990052F0A7 /* BasicChannels.xcdatamodeld in Sources */,
+				13F12D042663F77200B9B00C /* SamplerExtensions.swift in Sources */,
+				13F12D1C2663FB1500B9B00C /* Bass.swift in Sources */,
 				13ACAE44265EB0990052F0A7 /* ContentView.swift in Sources */,
+				13F12D102663F86C00B9B00C /* EnginePart.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
