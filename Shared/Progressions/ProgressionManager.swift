@@ -14,7 +14,7 @@ class ProgressionManager {
 
     var barsElapsed = 0
     var callbackInstrument = CallbackInstrument()
-    var callbackTrack: SequencerTrack? = nil
+    var callbackTrack: SequencerTrack! = nil
     
     init (_ engine: BasicEngine) {
         self.engine = engine
@@ -31,9 +31,9 @@ class ProgressionManager {
         })
         
         callbackTrack = engine.sequencer.addTrack(for: callbackInstrument)
-        callbackTrack!.length = 4
-        callbackTrack!.loopEnabled = true
-        callbackTrack!.sequence.add(noteNumber: 1, position: 0, duration: 0)
+        callbackTrack.length = 4
+        callbackTrack.loopEnabled = true
+        callbackTrack.sequence.add(noteNumber: 1, position: 0, duration: 0)
         
         engine.mixer.addInput(callbackInstrument)
     }

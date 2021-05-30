@@ -19,20 +19,19 @@ class BasicEngine {
     var melody: Melody! = nil
 
     let sequencer = Sequencer()
-    var callbackInst = CallbackInstrument()
     let mixer = Mixer()
     
-    var sequenceTrack: SequencerTrack? = nil
-    var sequenceCallbackTrack: SequencerTrack? = nil
-    
-    var progressionManager: ProgressionManager? = nil
+    var progressionManager: ProgressionManager! = nil
 
     let tempo: Double = 120
-    var secsPerBeat: Float
+    
+    var secsPerBeat: Float {
+        get {
+            return Float(60 / tempo)
+        }
+    }
     
     init() {
-        secsPerBeat = Float (60 / tempo)
-                
         progressionManager = ProgressionManager(self)
         
         drums = Drums(self)
